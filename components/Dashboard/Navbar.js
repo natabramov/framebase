@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { GoArrowRight } from "react-icons/go";
 import Link from 'next/link';
-import Logo from 'assets/tftlogo.png';
+import Logo from 'assets/teamfight-tactics-seeklogo.png';
 import Image from "next/image";
 
 // #172A3A Prussian Blue
@@ -16,11 +16,9 @@ const NavBar = () => {
   return (
     <OuterHeaderDiv>
       <TopHeaderDiv>
-        <InnerHeaderTextDiv>
           <HeaderText>Track your TFT Statistics with ease. </HeaderText>
           <p>Get started for free</p>
           <ArrowIcon><GoArrowRight /></ArrowIcon>
-        </InnerHeaderTextDiv> 
       </TopHeaderDiv>
       <HeaderNavBarOuterDiv>
         <NavBarIconDiv>
@@ -28,8 +26,8 @@ const NavBar = () => {
         </NavBarIconDiv>
         <Nav>
         <NavLinks>
-          <NavLink href="#">Sign Up</NavLink>
-          <NavLink href="#">Log In</NavLink>
+          <LogInLink href="/auth/login">Log in</LogInLink>
+          <NavLink href="/auth/login">Sign up for Free</NavLink>
         </NavLinks>
         </Nav>
       </HeaderNavBarOuterDiv>
@@ -37,6 +35,7 @@ const NavBar = () => {
   );
 };
 
+// header sticks to the top of the page
 const OuterHeaderDiv = styled.div`
   position: sticky;
   top: 0;
@@ -54,16 +53,9 @@ const TopHeaderDiv = styled.div`
   font-size: 12pt;
   font-family: var(--font-inter);
   width: 100%;
-  height: 75px;
 `;
 
-const InnerHeaderTextDiv = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  `;
-
-const ArrowIcon = styled.p`
+const ArrowIcon = styled.div`
   display: flex;
   justify-content: center;
   height: 30px;
@@ -74,29 +66,24 @@ const HeaderNavBarOuterDiv = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  padding: 15px 20px;
+  padding: 15px 20px; // top and bottom padding is 15px, left and right padding is 20px
   background-color: transparent;
   color: white;
   font-size: 12pt;
   font-family: var(--font-inter);
   width: 100%;
-  height: auto;
 `;
 
 const NavBarIconDiv = styled.div`
   font-size: 24px;
   margin-right: 20px;
-  color: black;
   `;
 
-const Nav = styled.nav`
+const Nav = styled.nav` // holds the sign up and log in buttons
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  justify-content: space-between; // the icon and buttons are on opposite sides
+  padding: 15px 0;
   background-color: transparent;
   `;
 
@@ -110,12 +97,32 @@ const NavLink = styled(Link)`
   font-size: 16px;
   font-weight: 500;
   transition: color 0.5s ease;
-  display: inline-block;
+  display: inline-block; // keeps buttons side by side
   background: rgb(101,184,145);
   background: radial-gradient(circle, rgba(101,184,145,1) 0%, rgba(0,144,150,1) 100%);
-  padding: 0.8rem 3rem;
+  padding: 0.8em 2em;
   color: white;
-  border-radius: 100rem;
+  border-radius: 100em;
+  border-width: 2px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-decoration: none; // no underline for link
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  }
+  `;
+
+const LogInLink = styled(Link)`
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.5s ease;
+  display: inline-block;
+  background: rgb(232, 253, 243);
+  padding: 0.8em 2em;
+  color: black;
+  border-radius: 100em;
   border-width: 2px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   text-decoration: none;
@@ -123,8 +130,7 @@ const NavLink = styled(Link)`
   &:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-  }
-  `;
+  }`;
 
 const HeaderText = styled.p`
   color:#caffe6;

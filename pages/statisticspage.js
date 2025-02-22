@@ -9,7 +9,7 @@ const PageContainer = styled.div`
   padding: 20px;
 `;
 
-export default function HomePage() {
+export default function StatisticsPage() {
   const { playerData, fetchPlayerStats, error } = usePlayerStats();
 
   return (
