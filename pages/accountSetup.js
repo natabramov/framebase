@@ -4,44 +4,23 @@ import styled from 'styled-components';
 // import { useStateContext } from '@/context/StateContext'
 // import {login, isEmailInUse} from '@/backend/Auth'
 import Link from 'next/link';
-import Logo from 'assets/teamfight-tactics-seeklogo.png';
-import Image from "next/image";
+import SignedInHeader from "/components/Dashboard/SignedInHeader";
 
 const AccountSetup = () => {
     return (
         <>
-        <TopSignInHeader>
-            <SignInLogoIconDiv>
-                <Image src={Logo} alt="logo" width={75} height={75}></Image>
-            </SignInLogoIconDiv>
-        </TopSignInHeader>
+        <SignedInHeader/>
         <InputContainer>
             <InputBox>
             <Title>Input your Riot ID here</Title>
             <Subtitle>This will give us the necessary info to compute your statistics</Subtitle>
             <Input type="text" placeholder="ex. Riot#333"></Input>
-            <ContinueButton>Continue</ContinueButton>
+            <ContinueButton href="/Dashboard">Continue</ContinueButton>
             </InputBox>
         </InputContainer>
         </>
     )
 };
-
-const TopSignInHeader = styled.div`
-  display: flex;
-  align-items: left;
-  background: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(235, 247, 240) 50%,rgb(149, 223, 188) 100%);
-  width: 100%;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  `;
-
-const SignInLogoIconDiv = styled.div`
-  font-size: 24px;
-  margin-right: 20px;
-  padding: 0px 12px;
-  color: black;
-  `;
 
 const InputContainer = styled.div`
   display: flex;
@@ -57,7 +36,7 @@ const InputContainer = styled.div`
 const InputBox = styled.div`
     background: white;
     padding: 40px;
-    border-radius: 30px;
+    border-radius: 30px; // makes edges rounded
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     width: 400px;
     text-align: center;
@@ -90,8 +69,7 @@ const Input = styled.input`
     border-color: #007bff;
   }
 `
-
-const ContinueButton = styled.button`
+const ContinueButton = styled(Link)`
   width: 100%;
   padding: 12px;
   font-size: 16px;
@@ -101,11 +79,13 @@ const ContinueButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
-
+  margin-top: 12px;
+  text-decoration: none;
+  display: inline-block;
+  
   &:hover {
-    background-color: rgb(82, 148, 117);
-  }
-`;
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  }`;
 
 export default AccountSetup;

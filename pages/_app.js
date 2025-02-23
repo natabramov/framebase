@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* Prevents horizontal scroll issues */
+    overflow-x: hidden;
   }
 `;
 

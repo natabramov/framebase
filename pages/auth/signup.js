@@ -1,61 +1,57 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-// import { useRouter } from 'next/router'
-// import { useStateContext } from '@/context/StateContext'
-// import { isEmailInUse, register} from '@/backend/Auth'
+import { useRouter } from 'next/router'
+import { useStateContext } from '/context/StateContext'
+import { isEmailInUse, register} from '/backend/Auth'
 import Link from 'next/link';
-import Logo from 'assets/teamfight-tactics-seeklogo.png';
-import Image from "next/image";
+import SignedInHeader from "/components/Dashboard/SignedInHeader";
 
 const Signup = () => {
 
-//   const { user, setUser } = useStateContext()
-//   const [ email, setEmail ] = useState('')
-//   const [ password, setPassword ] = useState('')
+  // const { user, setUser } = useStateContext()
+  const [ email, setEmail ] = useState('')
+  const [ password, setPassword ] = useState('')
 
-//   const router = useRouter()
+  const router = useRouter()
 
-//   async function validateEmail(){
-//     const emailRegex = /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-//     if(emailRegex.test(email) == false ){
-//         return false;
-//     }
-//     console.log('so far so good...')
-//     const emailResponse = await isEmailInUse(email)
-//     console.log('email response', emailResponse)
-//     if(emailResponse.length == 0 ){
-//         return false;
-//     }
+  async function validateEmail(){
+    const emailRegex = /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if(emailRegex.test(email) == false ){
+        return false;
+    }
+    console.log('so far so good...')
+    const emailResponse = await isEmailInUse(email)
+    console.log('email response', emailResponse)
+    if(emailResponse.length == 0 ){
+        return false;
+    }
 
-//     return true;
-// }
+    return true;
+}
 
-//   async function handleSignup(){
-//     const isValidEmail = await validateEmail()
-//     // console.log('isValidEmail', isValidEmail)
-//     // if(!isValidEmail){ return; }
+  async function handleSignup(){
+    const isValidEmail = await validateEmail()
+    // console.log('isValidEmail', isValidEmail)
+    // if(!isValidEmail){ return; }
     
-//     try{
-//         await register(email, password, setUser)
-//         router.push('/dashboard')
-//     }catch(err){
-//         console.log('Error Signing Up', err)
-//     }
-//   }
+    try{
+        await register(email, password, setUser)
+        router.push('/dashboard')
+    }catch(err){
+        console.log('Error Signing Up', err)
+    }
+  }
 
 
 return (
   <>
-  <TopSignInHeader>
-  <SignInLogoIconDiv>
-    <Image src={Logo} alt="logo" width={75} height={75}></Image>
-  </SignInLogoIconDiv>
-  </TopSignInHeader>
+  <SignedInHeader/>
   <SignInContainer>
     <SignInBox> 
         <Title>Sign Up</Title>
-        <Input type="email" placeholder="Enter your email address..."></Input>
-        <ContinueButton>Continue</ContinueButton> 
+        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email address..."></Input>
+        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password..."></Input>
+        <ContinueButton onClick={handleSignup}>Continue</ContinueButton> 
         <FooterText>
           <UserAgreementText>By signing up, you automatically agree to our <UserAgreementSpan href='/legal/terms-of-use' rel="noopener noreferrer" target="_blank"> Terms of Use</UserAgreementSpan> and <UserAgreementSpan href='/legal/privacy-policy' rel="noopener noreferrer" target="_blank">Privacy Policy.</UserAgreementSpan></UserAgreementText>
         </FooterText>
@@ -64,21 +60,6 @@ return (
   </>
   )
 }
-
-const TopSignInHeader = styled.div`
-display: flex;
-align-items: left;
-background: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(235, 247, 240) 50%,rgb(149, 223, 188) 100%);
-width: 100%;
-height: 75px;
-`;
-
-const SignInLogoIconDiv = styled.div`
-font-size: 24px;
-margin-right: 20px;
-padding: 0px 12px;
-color: black;
-`;
 
 const SignInContainer = styled.div`
 display: flex;

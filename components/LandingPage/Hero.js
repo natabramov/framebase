@@ -18,7 +18,7 @@ const Hero = () => {
           <BigHeader>Level up your skills</BigHeader>
           <Description>Feel accomplished with a TFT tracking app designed to track your match history, analyze key statistics, and help you climb ranks with confidence.</Description>
           <LogInLinkDiv>
-            <LogInLink href="/auth/login">Sign up for free</LogInLink>
+            <LogInLink href="/accountSetup">Sign up for free</LogInLink>
           </LogInLinkDiv>
           <StyledImage src={sorakaHDShadowNew} alt="soraka"></StyledImage>
       </Wrapper>
@@ -30,7 +30,6 @@ const BigHeader = styled.h1`
   font-size: 48px;
   font-weight: bold;
   letter-spacing: -0.04em;
-  font-family: var(--font-inter);
   background: linear-gradient(to bottom, black, #004346);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -43,15 +42,12 @@ const Description = styled.p`
   color: #010d3e;
   letter-spacing: -0.025em;
   margin-top: 1.5em;
-  font-family: var(--font-inter);
   `
 
-const LogInLinkDiv = styled.div`
-  display: flex;
+const LogInLinkDiv = styled.div` 
   gap: 4px;
   align-items: center;
   margin-top: 30px;
-  font-family: var(--font-inter);
   `;
 
 const LogInLink = styled(Link)`
@@ -77,9 +73,11 @@ const Wrapper = styled.div`
   max-width: 1200px;
   margin: auto;
   padding: 0 20px;
+  font-family: var(--font-inter);
   `;
 
 const GradientDiv = styled.div`
+  display: flex;  
   width: 100vw;
   height: 95vh;
   padding-top: 2em;
@@ -97,7 +95,5 @@ const StyledImage = styled(Image)`
   mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0.95) 95%, rgba(0, 0, 0, 0) 100%);
   -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0.95) 95%, rgba(0, 0, 0, 0) 100%);
 `;
-
-
 
 export default Hero;

@@ -1,37 +1,46 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-// import { useRouter } from 'next/router'
-// import { useStateContext } from '@/context/StateContext'
-// import {login, isEmailInUse} from '@/backend/Auth'
+import { useRouter } from 'next/router'
+import { useStateContext } from '/context/StateContext'
+import {login, isEmailInUse} from '/backend/Auth'
 import Link from 'next/link';
-import Logo from 'assets/teamfight-tactics-seeklogo.png';
-import Image from "next/image";
+import SignedInHeader from "/components/Dashboard/SignedInHeader";
 
 const Login = () => {
 
   // const { user, setUser } = useStateContext()
-  // const [ email, setEmail ] = useState('')
-  // const [ password, setPassword ] = useState('')
+  const [ email, setEmail ] = useState('')
+  const [ password, setPassword ] = useState('')
 
-  // const router = useRouter()
+  const router = useRouter()
 
 
-  // async function handleLogin(){
+  async function handleLogin(){
+    if (!email || !password) {
+      alert("Either email or password is unentered");
+      return;
+    }
 
-  // }
+    try {
+      const userCred = await login(email, password);
+      setUser(userCredential);
+      router.push('/Dashboard');
+    }
+    catch (error) {
+      console.error("Login failed:", error.message);
+      alert("Login failed. Please check your credentials and try again.");
+    }
+  }
 
 
   return (
     <>
-    <TopSignInHeader>
-    <SignInLogoIconDiv>
-      <Image src={Logo} alt="logo" width={75} height={75}></Image>
-    </SignInLogoIconDiv>
-    </TopSignInHeader>
+    <SignedInHeader/>
     <SignInContainer>
       <SignInBox> 
           <Title>Log In</Title>
-          <Input type="email" placeholder="Enter your email address..."></Input>
+          <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email address..."></Input>
+          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password..."></Input>
           <ContinueButton>Continue</ContinueButton> 
           <FooterText>
             <UserAgreementText>By signing in, you automatically agree to our <UserAgreementSpan href='/legal/terms-of-use' rel="noopener noreferrer" target="_blank"> Terms of Use</UserAgreementSpan> and <UserAgreementSpan href='/legal/privacy-policy' rel="noopener noreferrer" target="_blank">Privacy Policy.</UserAgreementSpan></UserAgreementText>
@@ -42,21 +51,6 @@ const Login = () => {
   )
 }
 
-const TopSignInHeader = styled.div`
-  display: flex;
-  align-items: left;
-  background: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(235, 247, 240) 50%,rgb(149, 223, 188) 100%);
-  width: 100%;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  `;
-
-const SignInLogoIconDiv = styled.div`
-  font-size: 24px;
-  margin-right: 20px;
-  padding: 0px 12px;
-  color: black;
-  `;
 
 const SignInContainer = styled.div`
   display: flex;
@@ -116,13 +110,13 @@ const ContinueButton = styled.button`
   }
 `;
 
-const FooterText = styled.p`
+const FooterText = styled.div`
   font-size: 12px;
   color: #6c757d;
   margin-top: 15px;
 `;
 
-const UserAgreementText = styled.p`
+const UserAgreementText = styled.div`
   font-size: 12px;
   color: #666;
   margin-top: 20px;

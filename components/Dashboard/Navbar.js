@@ -27,7 +27,7 @@ const NavBar = () => {
         <Nav>
         <NavLinks>
           <LogInLink href="/auth/login">Log in</LogInLink>
-          <NavLink href="/auth/login">Sign up for Free</NavLink>
+          <NavLink href="/auth/signup">Sign up for Free</NavLink>
         </NavLinks>
         </Nav>
       </HeaderNavBarOuterDiv>
