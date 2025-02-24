@@ -8,11 +8,10 @@ import SignedInHeader from "/components/Dashboard/SignedInHeader";
 
 const Signup = () => {
 
-  // const { user, setUser } = useStateContext()
-  const [ email, setEmail ] = useState('')
-  const [ password, setPassword ] = useState('')
-
-  const router = useRouter()
+   const { user, setUser } = useStateContext()
+  const [ email, setEmail ] = useState('');
+  const [ password, setPassword ] = useState('');
+  const router = useRouter();
 
   async function validateEmail(){
     const emailRegex = /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -20,25 +19,27 @@ const Signup = () => {
         return false;
     }
     console.log('so far so good...')
-    const emailResponse = await isEmailInUse(email)
-    console.log('email response', emailResponse)
-    if(emailResponse.length == 0 ){
-        return false;
+    const emailExists  = await isEmailInUse(email)
+    console.log('email response', emailExists )
+    if (emailExists){
+      alert("Email is already in use")
+        return false; 
     }
-
     return true;
 }
 
   async function handleSignup(){
     const isValidEmail = await validateEmail()
-    // console.log('isValidEmail', isValidEmail)
-    // if(!isValidEmail){ return; }
+    console.log('isValidEmail', isValidEmail)
+    if (!isValidEmail) { return; }
     
     try{
-        await register(email, password, setUser)
-        router.push('/dashboard')
-    }catch(err){
-        console.log('Error Signing Up', err)
+        await register({ email, password, setUser });
+        router.push('/Dashboard')
+    }
+    
+    catch(error){
+        console.log('Error Signing Up', error)
     }
   }
 

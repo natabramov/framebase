@@ -8,7 +8,7 @@ import SignedInHeader from "/components/Dashboard/SignedInHeader";
 
 const Login = () => {
 
-  // const { user, setUser } = useStateContext()
+  const { user, setUser } = useStateContext()
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
 
@@ -22,8 +22,8 @@ const Login = () => {
     }
 
     try {
-      const userCred = await login(email, password);
-      setUser(userCredential);
+      const userCred = await login({ email, password, setUser });
+      setUser(userCred);
       router.push('/Dashboard');
     }
     catch (error) {
@@ -41,7 +41,7 @@ const Login = () => {
           <Title>Log In</Title>
           <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email address..."></Input>
           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password..."></Input>
-          <ContinueButton>Continue</ContinueButton> 
+          <ContinueButton onClick={handleLogin}>Continue</ContinueButton> 
           <FooterText>
             <UserAgreementText>By signing in, you automatically agree to our <UserAgreementSpan href='/legal/terms-of-use' rel="noopener noreferrer" target="_blank"> Terms of Use</UserAgreementSpan> and <UserAgreementSpan href='/legal/privacy-policy' rel="noopener noreferrer" target="_blank">Privacy Policy.</UserAgreementSpan></UserAgreementText>
           </FooterText>

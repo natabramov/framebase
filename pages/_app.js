@@ -1,5 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 import { Inter } from "next/font/google";
+import { StateContext } from "/context/StateContext"
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"], variable: "--font-inter" });
 
@@ -21,9 +22,11 @@ export default function App({ Component, pageProps }) {
     return (
         <>
             <GlobalStyle />
-            <main className={inter.variable}>
-                <Component {...pageProps} />
-            </main>
+            <StateContext>
+              <main className={inter.variable}>
+                  <Component {...pageProps} />
+              </main> 
+            </StateContext>
         </>
     );
 }

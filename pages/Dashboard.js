@@ -1,5 +1,4 @@
 import { usePlayerStats } from "../hooks/usePlayerStats";
-import styled from "styled-components";
 import SignedInHeader from "@components/Dashboard/SignedInHeader";
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
@@ -25,7 +24,7 @@ const Dashboard = () => {
   return (
     <>
       <SignedInHeader/>
-      <p>Statistics dashboard page</p>
+      <p>Statistics dashboard page. welcome, {user.email}</p>
     </>
   );
 };
