@@ -18,7 +18,7 @@ const Hero = () => {
           <BigHeader>Level up your skills</BigHeader>
           <Description>Feel accomplished with a TFT tracking app designed to track your match history, analyze key statistics, and help you climb ranks with confidence.</Description>
           <LogInLinkDiv>
-            <LogInLink href="/accountSetup">Sign up for free</LogInLink>
+            <LogInLink href="/auth/signup">Sign up for free</LogInLink>
           </LogInLinkDiv>
           <StyledImage src={sorakaHDShadowNew} alt="soraka"></StyledImage>
       </Wrapper>

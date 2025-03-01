@@ -21,7 +21,7 @@ export default function StatisticsPage() {
       {playerData && (
         <div>
           <h2>{playerData.gameName}#{playerData.tagLine}</h2>
-          <div>{JSON.stringify(playerData)}</div>
+          <pre>{JSON.stringify(playerData, null, 2)}</pre>
         </div>
       )}
     </PageContainer>

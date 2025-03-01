@@ -23,7 +23,6 @@ const Login = () => {
 
     try {
       const userCred = await login({ email, password, setUser });
-      setUser(userCred);
       router.push('/Dashboard');
     }
     catch (error) {

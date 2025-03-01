@@ -20,21 +20,27 @@ export const isEmailInUse = async (email) => {
     }
 }
 
-export const register = async ({ email, password, setUser }) => {
+export const register = async ({ email, password, riotUsername, riotUsertag, riotPUUID, setUser }) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        await setDoc(doc(db, "users", user.uid), {
+        const userDocRef = doc(db, "users", user.uid);
+        await setDoc(userDocRef, {
             email: user.email,
-            createdOn: new Date()
-        })
+            createdOn: new Date(),
+            riotUsername: riotUsername,
+            riotUsertag: riotUsertag,
+            riotPUUID: riotPUUID
+        });
 
-        setUser(user);
+        const userDoc = await getDoc(userDocRef);
+        setUser(userDoc.data());
         console.log(`User ${user.email} signed up successfully`);
+        const userData = userDoc.data();
+        setUser(userData);
         return user;
     } 
-    
     catch (error) {
         console.error(`Error ${error.code}: ${error.message}`);
         throw error;
@@ -56,10 +62,10 @@ export const login = async ({ email, password, setUser }) => {
                 createdOn: new Date()
             });
         }
-        setUser(user);
+        const userData = userDoc.data();
+        setUser(userData);
         return user;
     } 
-    
     catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;

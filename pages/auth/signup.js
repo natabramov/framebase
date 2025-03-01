@@ -11,35 +11,48 @@ const Signup = () => {
    const { user, setUser } = useStateContext()
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
+  const [riotId, setRiotId] = useState('');
   const router = useRouter();
 
   async function validateEmail(){
     const emailRegex = /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if(emailRegex.test(email) == false ){
+      alert("Email is invalid.")
         return false;
     }
     console.log('so far so good...')
     const emailExists  = await isEmailInUse(email)
     console.log('email response', emailExists )
     if (emailExists){
-      alert("Email is already in use")
+      alert("Email is already in use.")
         return false; 
     }
     return true;
 }
 
   async function handleSignup(){
+    const [riotUsername, riotUsertag] = riotId.split('#');
     const isValidEmail = await validateEmail()
     console.log('isValidEmail', isValidEmail)
-    if (!isValidEmail) { return; }
+    if (!isValidEmail) {
+      return; 
+    }
     
     try{
-        await register({ email, password, setUser });
+        const response = await fetch(`/api/checkPlayer?username=${riotUsername}&usertag=${riotUsertag}`)
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(`Riot ID validation failed: ${errorData.error}`)
+          return;
+        }
+        const { data } = await response.json()
+        await register({ email, password, riotUsername, riotUsertag, riotPUUID: data.puuid, setUser })
         router.push('/Dashboard')
     }
     
     catch(error){
-        console.log('Error Signing Up', error)
+        console.log('Error Signing Up', error);
+        alert('Failed to sign up. Please try again.')
     }
   }
 
@@ -50,6 +63,7 @@ return (
   <SignInContainer>
     <SignInBox> 
         <Title>Sign Up</Title>
+        <Input type="text" value={riotId} onChange={(e) => setRiotId(e.target.value)} placeholder="Enter your Riot ID (ex. Name#tag)"></Input>
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email address..."></Input>
         <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password..."></Input>
         <ContinueButton onClick={handleSignup}>Continue</ContinueButton> 
