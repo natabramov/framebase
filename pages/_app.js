@@ -1,8 +1,6 @@
 import { createGlobalStyle } from "styled-components";
-import { Inter } from "next/font/google";
-import { StateContext } from "/context/StateContext"
-
-const inter = Inter({ subsets: ["latin"], weight: ["400", "700"], variable: "--font-inter" });
+import { StateContext } from "/context/StateContext";
+import { useEffect, useState } from "react";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -18,15 +16,18 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+
 export default function App({ Component, pageProps }) {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
     return (
-        <>
+            <>
             <GlobalStyle />
             <StateContext>
-              <main className={inter.variable}>
-                  <Component {...pageProps} />
-              </main> 
+            {isClient && <Component {...pageProps} />}
             </StateContext>
-        </>
+            </>
     );
 }

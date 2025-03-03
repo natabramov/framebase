@@ -56,7 +56,7 @@ const TopHeaderDiv = styled.div`
   background-color: #172A3A;
   color: white;
   font-size: 12pt;
-  font-family: var(--font-inter);
+  font-family: "Inter", serif;
   width: 100%;
 `;
 
@@ -75,7 +75,7 @@ const HeaderNavBarOuterDiv = styled.div`
   background-color: transparent;
   color: white;
   font-size: 12pt;
-  font-family: var(--font-inter);
+  font-family: "Inter", serif;
   width: 100%;
 `;
 

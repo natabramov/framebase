@@ -84,7 +84,7 @@ background-color: rgb(253, 255, 251);
 width: 100%;
 height: 100vh;
 color: white;
-font-family: var(--font-inter);
+font-family: "Inter", serif;
 `;
 
 const SignInBox = styled.div`

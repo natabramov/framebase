@@ -73,7 +73,7 @@ const Wrapper = styled.div`
   max-width: 1200px;
   margin: auto;
   padding: 0 20px;
-  font-family: var(--font-inter);
+  font-family: "Inter", serif;
   `;
 
 const GradientDiv = styled.div`
