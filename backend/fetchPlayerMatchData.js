@@ -4,15 +4,29 @@ import traitData from "../dragontail-15.4.1/15.4.1/data/en_US/tft-trait.json";
 import unitData from "../dragontail-15.4.1/15.4.1/data/en_US/tft-champion.json";
 import { storage } from '/backend/Firebase';
 
+const championLookup = Object.keys(unitData.data).reduce((map, key) => {
+  const unit = unitData.data[key];
+  if (unit.id) {
+    map[unit.id.toLowerCase()] = unit;
+  }
+  return map;
+}, {});
+
+function convertUnixToDate(unixTime) {
+  const date = new Date(unixTime);
+  return date.toLocaleDateString();
+}
+
 export const fetchPlayerMatchData = async (playerData) => {
-  if (!playerData?.matchData.info.participants) {
+  console.log("player data", playerData)
+  if (!playerData?.info.participants) {
     console.log("No match data available.");
     return [];
   }
 
   const matchData = [];
 
-  for (const participant of playerData.matchData.info.participants) {
+  for (const participant of playerData.info.participants) {
     if (participant.companion.item_ID == null) {
         console.log("No participant companion (tactician) ID found");
     }
@@ -69,7 +83,8 @@ export const fetchPlayerMatchData = async (playerData) => {
     }
 
     // UNITS
-    let unitImageUrls = [];
+    // let unitImageUrls = [];
+    let units = [];
     // note: tft-champion.json gives correct costs. change to this instead of rarity
     const sortedUnits = participant.units.sort((a, b) => b.rarity - a.rarity);
     for (const unit of sortedUnits) {
@@ -77,30 +92,35 @@ export const fetchPlayerMatchData = async (playerData) => {
         console.log("Error finding units")
       }
 
-      const unitID = unit.character_id;
+      let unitID = unit.character_id.toLowerCase();
       const unitItemNames = unit.itemNames; // need images for this too
       const unitName = unit.name;  // often blank
       const unitRarity = unit.rarity; // doesn't equate to unit cost
       const unitTier = unit.tier; // 1* 2* etc
 
-      if (unitID === "TFT13_JayceSummon") {
-        console.log(`Skipping unit: ${unitID}`);
-        continue;
-      }
       if ((unitID || unitItemNames || unitName || unitRarity || unitTier) == null) {
         console.log(`Error with units -- units id: ${unitID} unit items: ${unitItemNames} unit name (usually blank) ${unitName} unit rarity: ${unitRarity} unit star tier: ${unitTier}`)
       }
 
-      const unitLookupID = unitData.data[`Maps/Shipping/Map22/Sets/TFTSet13/Shop/${unitID}`]; ////////// failing
+      if (unitID === "tft13_jaycesummon" || unitID === "tft13_sion"){
+        console.log("skipping", unitID)
+        continue;
+      }
+
+      const unitLookupID = championLookup[unitID].id;
       if (unitLookupID == null) {
         console.log(`No unit ID found for unit ID: ${unitID} in unit json ${unitLookupID}`);
       }
 
-      const unitImagePath = unitLookupID.image.full
+      const unitImagePath = championLookup[unitID].image.full
       const unitImageStorageRef = ref(storage, `dragontail-15.4.1/15.4.1/img/tft-champion/${unitImagePath}`);
+
       try {
         const unitImageUrl = await getDownloadURL(unitImageStorageRef);
-        unitImageUrls.push(unitImageUrl); // Store each trait image URL in the array
+        units.push({
+          imageUrl: unitImageUrl,
+          tier: unitTier,
+        });
       } catch (error) {
         console.error(`Error fetching trait image for unit: ${unitID}`, error);
       }
@@ -120,9 +140,8 @@ export const fetchPlayerMatchData = async (playerData) => {
             goldLeft: participant.gold_left,
             dmgToPlayers: participant.total_damage_to_players,
             traitImages: traitImageUrls,
-            unitImages: unitImageUrls
-        });
-        console.log(`Fetched match data for ${participant.puuid}: ${tacticianImageUrl}`);
+            units: units,
+            matchTime: convertUnixToDate(playerData.info.game_datetime)});
     } catch (error) {
         console.error(`Error fetching match data for item ID ${companionID}:`, error);
     }

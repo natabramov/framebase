@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         const userData = await response1.json();
         const puuid = userData.puuid;
 
-        const url2 = `https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${API_KEY}`;
+        const url2 = `https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/${puuid}/ids?start=0&count=5&api_key=${API_KEY}`;
 
         const response2 = await fetch(url2, {
             method:"GET",
@@ -34,26 +34,46 @@ export default async function handler(req, res) {
           }
           const matchIDsData = await response2.json();
 
-        const firstMatch = matchIDsData[0]
+          const allMatchData = await fetchAllMatches(matchIDsData, API_KEY);
 
-        const url3 = `https://americas.api.riotgames.com/tft/match/v1/matches/${firstMatch}?api_key=${API_KEY}`;
-
-        const response3 = await fetch(url3, {
-            method:"GET",
-            headers: { "X-Riot-Token": API_KEY },
-        })
-
-        if (!response3.ok) {
-            const errorText = await response3.text();
-            throw new Error(`Riot API error: ${response3.status} - ${errorText}`);
-        }
-        
-        const matchData = await response3.json();
-
-          res.status(200).json({ ...userData, matchIDsData, matchData });
+          res.status(200).json({ ...userData, matchIDsData, allMatchData });
     }
     
     catch (error) {
         res.status(500).json({ error: error.message });
     }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fetchAllMatches(matchIDsData, API_KEY) {
+    let allMatchData = [];
+
+    for (const matchID of matchIDsData) {
+        const url = `https://americas.api.riotgames.com/tft/match/v1/matches/${matchID}?api_key=${API_KEY}`;
+
+        try {
+            const response = await fetch(url, {
+                method: "GET",
+                headers: { "X-Riot-Token": API_KEY },
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`Error fetching match ${matchID}: ${errorText}`);
+                continue; // Skip failed requests but continue fetching
+            }
+
+            const matchData = await response.json();
+            allMatchData.push(matchData);
+        } catch (error) {
+            console.error(`Error fetching match ${matchID}:`, error);
+        }
+
+        await sleep(5);
+    }
+
+    return allMatchData;
 }

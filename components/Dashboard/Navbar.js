@@ -17,7 +17,7 @@ const NavBar = () => {
     <OuterHeaderDiv>
       <TopHeaderDiv>
           <HeaderText>Track your TFT Statistics with ease. </HeaderText>
-          <p>Get started for free</p>
+          <StyledLink href="/auth/signup">Get started for free</StyledLink>
           <ArrowIcon><GoArrowRight /></ArrowIcon>
       </TopHeaderDiv>
       <HeaderNavBarOuterDiv>
@@ -41,6 +41,11 @@ const OuterHeaderDiv = styled.div`
   top: 0;
   backdrop-filter: blur(4px);
   `;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: white;
+`
 
 const TopHeaderDiv = styled.div`
   display: flex;

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-// import { useRouter } from 'next/router'
-// import { useStateContext } from '@/context/StateContext'
-// import { isEmailInUse, register} from '@/backend/Auth'
 import Logo from 'assets/teamfight-tactics-seeklogo.png';
 import Image from "next/image";
+import Link from "next/link";
 
 const SignedInHeader = ({ children }) => {
 
@@ -12,7 +10,9 @@ return (
   <>
   <TopSignInHeader>
   <SignInLogoIconDiv>
-    <Image src={Logo} alt="logo" width={75} height={75}></Image>
+    <LogoLink href="/">
+      <Image src={Logo} alt="logo" width={75} height={75}></Image>
+    </LogoLink>
   </SignInLogoIconDiv>
     {children}
   </TopSignInHeader>
@@ -34,5 +34,8 @@ const SignInLogoIconDiv = styled.div`
 font-size: 24px;
 color: black;
 `;
+
+const LogoLink = styled(Link)`
+`
 
 export default SignedInHeader;
