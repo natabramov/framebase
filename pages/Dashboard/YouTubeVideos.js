@@ -55,7 +55,6 @@ const YouTubeVideos = () => {
         }
       }
     };
-    console.log("Fetching ranked data...");
     fetchRankedData();
   }, [playerData]);
 
@@ -67,7 +66,6 @@ const YouTubeVideos = () => {
       }
 
       try {
-        console.log("Sending ranked data:", rankedData[2].tier);
         const response = await fetch(`/api/fetchYouTubeVideos?rank=${rankedData[2].tier}`);
 
         if (!response.ok) {
@@ -75,7 +73,6 @@ const YouTubeVideos = () => {
         }
 
         const data = await response.json();
-        console.log("videos set", data.videos)
         setVideos(data.videos);
       } 
       
