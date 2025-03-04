@@ -199,6 +199,7 @@ const SpinnerContainer = styled.div`
   align-items: center;
   justify-content: center;
   height: 200px;
+  font-family: "Inter", serif;
 `;
 
 const Spinner = styled.div`
