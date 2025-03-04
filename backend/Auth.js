@@ -8,23 +8,25 @@ import { createUserWithEmailAndPassword,
 import { db } from "./Firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
+// fetches current sign in methods for the email, if empty array [] then the email is not in use. if the array is populated then it is in use
 export const isEmailInUse = async (email) => {
     try {
         const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-        console.log(`Sign-in methods for ${email}`, signInMethods);
         return signInMethods.length > 0;
     }
     catch (error) {
-        console.error("Error verifying email use:", error); 
+        console.error("Error verifying email:", error.message); 
         return false;
     }
 }
 
-export const register = async ({ email, password, riotUsername, riotUsertag, riotPUUID, setUser }) => {
+// registers a user with their inputted riot ID + PUUID received from API fetch in Dashboard.js
+export const register = async ({email, password, riotUsername, riotUsertag, riotPUUID, setUser}) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
+        // creates a user document with the necessary information to be stored
         const userDocRef = doc(db, "users", user.uid);
         await setDoc(userDocRef, {
             email: user.email,
@@ -36,23 +38,23 @@ export const register = async ({ email, password, riotUsername, riotUsertag, rio
 
         const userDoc = await getDoc(userDocRef);
         setUser(userDoc.data());
+        
         console.log(`User ${user.email} signed up successfully`);
+
         const userData = userDoc.data();
         setUser(userData);
         return user;
     } 
     catch (error) {
-        console.error(`Error ${error.code}: ${error.message}`);
-        throw error;
+        console.error("Error with registering user", error.message);
     }
 }
 
-export const login = async ({ email, password, setUser }) => {
+// login a user and fetch their data from the document. if the document does not exist then create one
+export const login = async ({email, password, setUser}) => {
     try {
-        console.log("Logging in with email:", email);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        console.log("Login successful:", user.uid);
 
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (!userDoc.exists()) {
@@ -67,19 +69,20 @@ export const login = async ({ email, password, setUser }) => {
         return user;
     } 
     catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(`Error ${errorCode}: ${errorMessage}`);
-        throw error;
+        console.error("Error with logging in user", error.message);
     }
 }
 
+// get the currently signed in user https://firebase.google.com/docs/auth/web/manage-users
+// retrieves their existing data from the dov if it exists, if not then the user is set to null
 export const getSignedInUser = (setUser) => {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             setUser(userDoc.exists() ? userDoc.data() : null);
-        } else {
+        } 
+        
+        else {
             setUser(null);
         }
     });

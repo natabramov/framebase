@@ -18,6 +18,7 @@ const GlobalStyle = createGlobalStyle`
 
 
 export default function App({ Component, pageProps }) {
+  // for hydration issue
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);

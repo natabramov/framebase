@@ -4,6 +4,7 @@ export default async function handler(req, res) {
   const { username, usertag } = req.query;
 
   try {
+    // gets generic player information, this function just checks if the response is okay, meaning the riot user
     const url = `https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${username}/${usertag}?api_key=${API_KEY}`;
 
     const response = await fetch(url, {
@@ -13,19 +14,16 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       if (response.status === 404) {
-        return res.status(404).json({ error: "Riot ID not found" });
+        return res.status(404).json({error: "Riot ID not found"});
       }
       
-      const errorText = await response.text();
-      return res.status(response.status).json({ 
-        error: `Riot API error: ${response.status} - ${errorText}` 
-      });
+      return res.status(response.status).json({error: "Riot API error"});
     }
 
     const data = await response.json(); 
-    return res.status(200).json({ data });
+    return res.status(200).json({data});
   } 
   catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({error: "Failed to check player's Riot ID"});
   }
 }

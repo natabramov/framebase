@@ -8,19 +8,26 @@ import { signOutUser } from '/backend/Auth';
 import { fetchPlayerMatchData } from "../backend/fetchPlayerMatchData";
 import { fetchPlayerRankIcons } from "../backend/fetchPlayerRankedIcons"; 
 import { FaStar } from "react-icons/fa6";
+import Link from "next/link";
 
 
 const CombatIcon = '/Combat_Icon.png';
 
 const Dashboard = () => {
 
+  // hooks for user and playerData
   const { user, setUser } = useStateContext();
-  const router = useRouter();
-  const [playerMatchData, setPlayerMatchData] = useState([]);
   const { playerData, fetchPlayerStats } = usePlayerStats();
-  const [loading, setLoading] = useState(true);
+
+  const [playerMatchData, setPlayerMatchData] = useState([]);
   const [rankedData, setRankedData] = useState([]);
 
+  // initially loading
+  const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+
+  // if the user is not detected, push them back to index.js. otherwise, fetch their data
   useEffect(() => {
     if (!user){
       router.push('/');
@@ -40,8 +47,9 @@ const Dashboard = () => {
     }
   };
 
+  // this use effect fetches the player's rank, ex. Diamond, and uses this rank to fetch the related icons
   useEffect(() => {
-    const fetchAndSetRankedData = async () => {
+    const fetchRankedDataIcons = async () => {
       if (playerData && playerData.puuid) {
         try {
           const res = await fetch(`/api/playerRanks?puuid=${playerData.puuid}`);
@@ -53,27 +61,33 @@ const Dashboard = () => {
               "RANKED_TFT_DOUBLE_UP": 2, 
               "RANKED_TFT_TURBO": 3 
             }
+            // sort the icons in the order above, standard Ranked comes first
             icons.sort((a,b) => order[a.queueType] - order[b.queueType]);
             setRankedData(icons);
           } 
           else {
             setRankedData(data);
           }
-        } catch (error) {
+        } 
+        catch (error) {
           console.error("Error fetching rank data:", error);
         }
       }
     };
-    console.log("ranked data", rankedData)
-    fetchAndSetRankedData();
+    fetchRankedDataIcons();
   }, [playerData]);
   
-    
+  // loads match data images from firebase storage
   useEffect(() => {
     const loadMatchData = async () => {
+      
+      // this takes a while to load, so i made sure to add a loading symbol
       setLoading(true);
+
       let matchDataArray = [];
+
       if (playerData) {
+        // if the data exists, iterate through all matches and fetch the match data icons for each match
         for (let i = 0; i < playerData.allMatchData.length; i++) {
           const match = playerData.allMatchData[i];
         try {
@@ -91,18 +105,20 @@ const Dashboard = () => {
       }
       setLoading(false);
     };
-
     loadMatchData();
   }, [playerData]);
 
+  // renders the stars above unit depending on if the player got the unit to 2*, 3*, or 4*
   const renderStars = (tier) => {
     let stars = [];
     for (let i = 0; i < tier; i++) {
+      // create an array of the correct amount of stars
       stars.push(<StarIcon key={i} tier={tier}><FaStar /></StarIcon>);
     }
     return stars;
   };
 
+  // in the API fetch, the gamemode queues are in different names from what they are called in game, so I adjusted the labels
   function getQueueLabel(queueType) {
     switch (queueType) {
       case "RANKED_TFT_TURBO":
@@ -119,118 +135,169 @@ const Dashboard = () => {
   return (
     <>
     <PageContainer>
+      <SignedInHeader>
+          <SignOutButton onClick={handleSignOut}>Sign Out</SignOutButton>
+      </SignedInHeader>
 
-    <SignedInHeader>
-        <SignOutButton onClick={handleSignOut}>Sign Out</SignOutButton>
-    </SignedInHeader>
-    <Header>
-      {user ? (<GreetingContainer>Welcome, {user.riotUsername}#{user.riotUsertag}!</GreetingContainer>) : (<GreetingContainer>You are signed out.</GreetingContainer>)}
-      <InfoContainer>Here's your current ranked data: </InfoContainer>
-    </Header>
-    <PlayerInfo>
-    {rankedData.map((entry) => (
-              <PlayerRankCard key={entry.queueType}>
-                <RankedInfo>
-                  {getQueueLabel(entry.queueType)}
-                </RankedInfo>
-                <RankedImage src={entry.rankedIconUrl} alt="Rank Icon" />
-                <RankedInfo>
-                  {entry.ratedTier || entry.tier}{" "}
-                  {entry.ratedRating ? `${entry.ratedRating} LP` : `${entry.leaguePoints} LP`}
-                </RankedInfo>
-              </PlayerRankCard>))}
-    </PlayerInfo>
+      <Header>
+        {user ? (<GreetingContainer>Welcome, {user.riotUsername}#{user.riotUsertag}!</GreetingContainer>) : (<GreetingContainer>You are signed out.</GreetingContainer>)}
+        <InfoContainer>Here's your current ranked data: </InfoContainer>
+      </Header>
 
-    <InnerPageContainer>
-      <MiddleContainer>
-      {loading ? (<SpinnerContainer><Spinner /><p>Loading match history...</p></SpinnerContainer>) : (
-        playerMatchData?.map((match, matchIndex) => (
-          <MatchContainer key={matchIndex}>
-            <MatchTimeHeader>MATCH {matchIndex + 1} - {match[matchIndex].matchTime}</MatchTimeHeader>
-            {match.map((participant) => (
-              <ImageWrapper key={participant.puuid}>
+      <PlayerInfo>
+        {/* creates cards displaying the different amount of ranks in the game */}
+        {rankedData.map((entry) => (
+                  <PlayerRankCard key={entry.queueType}>
+                    <RankedInfo>
+                      {getQueueLabel(entry.queueType)}
+                    </RankedInfo>
+                    <RankedImage src={entry.rankedIconUrl} alt="Rank Icon" />
+                    <RankedInfo>
+                      {entry.ratedTier || entry.tier}{" "}
+                      {/* hyperroll uses ratedRating instead of leaguePoints */}
+                      {entry.ratedRating ? `${entry.ratedRating} LP` : `${entry.leaguePoints} LP`}
+                    </RankedInfo>
+                  </PlayerRankCard>))}
+      </PlayerInfo>
+
+      <YouTubeLinkContainer>
+          <YouTubeLink href="/Dashboard/YouTubeVideos">Click here for YouTube Coaching Videos</YouTubeLink>
+      </YouTubeLinkContainer>
+      
+
+      <InnerPageContainer>
+        <MiddleContainer>
+        {loading ? (<SpinnerContainer><Spinner /><p>Loading match history...</p></SpinnerContainer>) : (
+          // if not loading, display the match data. this match data includes all icons that are related to the game, including
+          // player profile pictures, final levels, damage dealt to other players, all trait images that were played, and all units including star info
+          playerMatchData?.map((match, matchIndex) => (
+            <MatchContainer key={matchIndex}>
+
+              <MatchTimeHeader>MATCH {matchIndex + 1} - {match[matchIndex].matchTime}</MatchTimeHeader>
+              {match.map((participant) => (
+                <ImageWrapper key={participant.puuid}>
               <MatchDataContainer>
-              <MatchDataHeader>
 
-                <LeftSide>
-                  <PlacementText placement={participant.placement}>{participant.placement}</PlacementText>
+                <MatchDataHeader>
+                  {/* I separated the header into the left and right side so I could align the traits on the right part of the div */}  
+                  <LeftSide>
+                    <PlacementText placement={participant.placement}>{participant.placement}</PlacementText>
+                      
+                    {/* player profile picture (tactician), final level, and full riot name + tag */}
+                    <ImageLevelWrapper>
+                      <StyledImage src={participant.imageUrl} alt="Tactician" />
+                      <Level>{participant.finalLevel}</Level>
+                    </ImageLevelWrapper>
+                    <RiotName>{participant.riotIdGameName}#{participant.riotIdTagline}</RiotName>
                     
-                  <ImageLevelWrapper>
-                    <StyledImage src={participant.imageUrl} alt="Tactician" />
-                    <Level>{participant.finalLevel}</Level>
-                  </ImageLevelWrapper>
-                  <RiotName>{participant.riotIdGameName}#{participant.riotIdTagline}</RiotName>
-                  
-                  {/* damage done to players section indicated by a combat icon*/}
-                  <StyledDiv>
-                    <StyledIcon src={CombatIcon}></StyledIcon>
-                      <StyledText>
-                      {participant.dmgToPlayers}
-                      </StyledText>
-                  </StyledDiv>
-                </LeftSide>
+                    {/* damage done to players section indicated by a combat icon*/}
+                    <StyledDiv>
+                      <StyledIcon src={CombatIcon}></StyledIcon>
+                        <StyledText>
+                        {participant.dmgToPlayers}
+                        </StyledText>
+                    </StyledDiv>
+                  </LeftSide>
 
-                {/* I separated the header into the left and right side so I could align the traits on the right part of the div */}
-                  <TraitImageContainer>
-                    {participant.traitImages.map((traitUrl, index) => (
-                      <TraitImage key={index} src={traitUrl} alt="Trait" />
-                    ))}
-                  </TraitImageContainer>
+                    {/* trait icons that are aligned to right side of div with space-between */}
+                    <ImageContainer>
+                      {participant.traitImages.map((traitUrl, index) => (
+                        <TraitImage key={index} src={traitUrl} alt="Trait" />
+                      ))}
+                    </ImageContainer>
+                </MatchDataHeader>
 
-              </MatchDataHeader>
-              <UnitDataDiv>
-                <UnitImageContainer>
-                {participant.units.map((unit, index) => (
-                  <UnitWrapper key={index}>
-                    <StyledUnitImage src={unit.imageUrl} alt="Unit" />
-                    {unit.tier > 1 && (<StarOverlay>{renderStars(unit.tier)}</StarOverlay>)}
-                  </UnitWrapper>  
-                ))}
-                </UnitImageContainer>
-              </UnitDataDiv>
-              </MatchDataContainer>
+                {/* all unit icons including the stars to be rendered for each unit. everything above 1* is rendered */}
+                <UnitDataDiv>
+                  <ImageContainer>
+                  {participant.units.map((unit, index) => (
+                    <UnitWrapper key={index}>
+                      <StyledUnitImage src={unit.imageUrl} alt="Unit" />
+                      {unit.tier > 1 && (<StarOverlay>{renderStars(unit.tier)}</StarOverlay>)}
+                    </UnitWrapper>  
+                  ))}
+                  </ImageContainer>
+                </UnitDataDiv>
+
+            </MatchDataContainer>
               </ImageWrapper>
-            ))}
-          </MatchContainer>
-        )))}
-      </MiddleContainer>
-    </InnerPageContainer>
+              ))}
+            </MatchContainer>
+          )))}
+        </MiddleContainer>
+      </InnerPageContainer>
     </PageContainer>
 
     </>
   );
 };
 
+// the placement color is dynamic depending on 1st-4th and 5th-8th. 1-4 is a win and 5-8 is a loss
 const getPlacementColor = (placement) => {
   switch (placement) {
-    case 1: return "#facf43"; // gold
-    case 2: return "#f57fd9"; // pink
-    case 3: return "#6fd9fc"; // blue
-    case 4: return "#6ffc82"; // green
-    default: return "#8a8484"; // grey for 5-8
+    case 1: 
+      return "#facf43"; // gold
+    case 2: 
+      return "#f57fd9"; // pink
+    case 3: 
+      return "#6fd9fc"; // blue
+    case 4: 
+      return "#6ffc82"; // green
+    default: 
+      return "#8a8484"; // grey for 5-8
   }
 };
 
+// star color is dynamic depending on how many stars the unit has. 2* is silver, 3* is gold, and 4* is green
 const getStarColor = (tier) => {
-  if (tier === 2) {
-    return "#cee9fc"; // silver
+  switch (tier) {
+    case 2: 
+      return "#cee9fc"; // silver
+    case 3: 
+      return "#facf43"; // gold
+    default: 
+      return "#65B891"; // green for 4*
   }
-  else if (tier === 3) {
-    return "#facf43"; // gold
-  }
-  else {
-    return "#65B891"; // green for 4*
-  }
-}
+};
+
 
 const GreetingContainer = styled.div`
   color: white;
   padding: 20px 10px;
-  `
+`;
+
 const InfoContainer = styled.div`
   color: rgb(223, 255, 219);
   padding: 20px 0px;
+`;
+
+const YouTubeLinkContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
   `
+
+const YouTubeLink = styled(Link)`
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.5s ease;
+  display: inline-block; // keeps buttons side by side
+  background: rgb(101,184,145);
+  background: radial-gradient(circle, rgba(101,184,145,1) 0%, rgba(0,144,150,1) 100%);
+  padding: 0.8em 2em;
+  color: white;
+  border-radius: 100em;
+  border-width: 2px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-decoration: none; // no underline for link
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  }
+`
 
 const SignOutButton = styled.button`
   padding: 10px 20px;
@@ -253,11 +320,12 @@ const SpinnerContainer = styled.div`
   height: 200px;
 `;
 
+// https://www.w3schools.com/howto/howto_css_loader.asp
 const Spinner = styled.div`
   width: 40px;
   height: 40px;
-  border: 4px solid #ccc;       /* Light gray */
-  border-top: 4px solid #004346;/* Accent color */
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #004346;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -274,7 +342,7 @@ const MatchTimeHeader = styled.div`
   font-size: 2em;
   font-weight: bold;
   padding: 20px;
-  `
+  `;
 
 const MatchContainer = styled.div`
   width: 100%;
@@ -298,7 +366,7 @@ const TraitImage = styled.img`
 `;
 
 const PageContainer = styled.div`
-  font-family: var(--font-inter);
+  font-family: "Inter", serif;
   width: 100%;
   height: 100vh;
   background-color: rgb(12, 44, 5);
@@ -309,7 +377,6 @@ const InnerPageContainer = styled.div`
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  color: black;
   background-color: rgb(12, 44, 5);
   `;
   
@@ -318,7 +385,7 @@ const Header = styled.div`
   align-items: left;
   justify-content: left;
   padding: 0 15px;
-  font-family: var(--font-inter);
+  font-family: "Inter", serif;
   font-weight: bold;
   font-size: 1.25em;
   `;
@@ -366,7 +433,7 @@ const MiddleContainer = styled.div`
   background: white;
   padding: 40px;
   border-radius: 30px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 10px rgba(36, 36, 36, 0.1);
   background-color: rgb(253, 255, 251);
   margin-top: 40px;
   margin-bottom: 40px;
@@ -400,21 +467,21 @@ const UnitDataDiv = styled.div`
   padding: 10px 0px;
   `;
 
-  const UnitImageContainer = styled.div`
+  const ImageContainer = styled.div`
     display: flex;
     gap: 5px;
     justify-content: center;
   `;
 
-  const StyledUnitImage = styled.img`
-    display: flex;
-    width: 4.5em;
-    height: 4.5em;
-    object-fit: cover;
-    object-position: 90% 10%; // shifts the image to the right, as riot's full champion image is wide
-    border-radius: 8px;
-    border: 4px solid #004346;
-  `;
+const StyledUnitImage = styled.img`
+  display: flex;
+  width: 4.5em;
+  height: 4.5em;
+  object-fit: cover;
+  object-position: 90% 10%; // shifts the image to the right, as riot's full champion image is wide
+  border-radius: 8px;
+  border: 4px solid #004346;
+`;
 
 const StyledImage = styled.img`
   width: 60px;
@@ -432,6 +499,7 @@ const PlacementText = styled.div`
   font-size: 1.5em;
   font-weight: bold;
   border-radius: 8px;
+  // pass placement as a prop to get the placement color
   color: ${({ placement }) => getPlacementColor(placement)};
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
   border: 5px solid ${({ placement }) => getPlacementColor(placement)};
@@ -459,17 +527,12 @@ const Level = styled.div`
   font-weight: bold;
   border-radius: 50%;
   border: 2px solid white;
-  `
+`;
+
 const RiotName = styled.div`
   font-size: 1em;
   font-weight: bold;
   color: rgb(255, 208, 208);
-  `
-
-const TraitImageContainer = styled.div`
-  display: flex;
-  gap: 5px;
-  justify-content: center;
 `;
 
 const StyledIcon = styled.img`
@@ -477,18 +540,19 @@ const StyledIcon = styled.img`
   height: 40px;
   object-fit: contain;
   border-radius: 0px;
-  ` 
+`;
+
 const StyledDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 
 const StyledText = styled.div`
   font-size: 1em;
   font-weight: bold;
   color: white;
-`
+`;
 
 const LeftSide = styled.div`
   display: flex;
@@ -511,6 +575,7 @@ const StarOverlay = styled.div`
 `;
 
 const StarIcon = styled.div`
+// passes tier as a prop, same way as placement from above
   color: ${({ tier }) => getStarColor(tier)};
   font-size: 1rem;
 `;

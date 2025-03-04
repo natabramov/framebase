@@ -4,6 +4,8 @@ import traitData from "../dragontail-15.4.1/15.4.1/data/en_US/tft-trait.json";
 import unitData from "../dragontail-15.4.1/15.4.1/data/en_US/tft-champion.json";
 import { storage } from '/backend/Firebase';
 
+// I created a lookup map for the unitData JSON file, because the key identifier is nested in the JSON structure
+// ex. "Maps/Shipping/Map22/Sets/TFTSet13/Shop/TFT13_Caitlyn". this lookup function reduces the key to just TFT13_Caitlyn
 const championLookup = Object.keys(unitData.data).reduce((map, key) => {
   const unit = unitData.data[key];
   if (unit.id) {
@@ -12,6 +14,7 @@ const championLookup = Object.keys(unitData.data).reduce((map, key) => {
   return map;
 }, {});
 
+// riot match time is in unix, this function is to convert to a date like 3/3/2025
 function convertUnixToDate(unixTime) {
   const date = new Date(unixTime);
   return date.toLocaleDateString();
@@ -19,13 +22,14 @@ function convertUnixToDate(unixTime) {
 
 export const fetchPlayerMatchData = async (playerData) => {
   console.log("player data", playerData)
-  if (!playerData?.info.participants) {
+  if (!playerData.info.participants) {
     console.log("No match data available.");
     return [];
   }
 
   const matchData = [];
 
+  // for each participant, generate their match data: tactician picture, trait pictures, unit pictures from firebase storage
   for (const participant of playerData.info.participants) {
     if (participant.companion.item_ID == null) {
         console.log("No participant companion (tactician) ID found");
@@ -48,6 +52,7 @@ export const fetchPlayerMatchData = async (playerData) => {
 
     // TRAITS
     let traitImageUrls = [];
+    // sorted traits by number of units. a trait that has 4 active units is before a trait with 3 active units
     const sortedTraits = participant.traits.sort((a, b) => b.tier_current - a.tier_current);
     for (const trait of sortedTraits) {
       if (!trait) {
@@ -74,18 +79,20 @@ export const fetchPlayerMatchData = async (playerData) => {
         const traitImageStorageRef = ref(storage, `dragontail-15.4.1/15.4.1/img/tft-trait/${traitImagePath}`);
         try {
           const traitImageUrl = await getDownloadURL(traitImageStorageRef);
-          traitImageUrls.push(traitImageUrl); // Store each trait image URL in the array
-        } catch (error) {
-          console.error(`Error fetching trait image for trait: ${traitName}`, error);
+          // store each image url in the array to be displayed
+          traitImageUrls.push(traitImageUrl);
+        } 
+        
+        catch (error) {
+          console.error("Error fetching trait image for trait", traitName);
         }
       }
 
     }
 
     // UNITS
-    // let unitImageUrls = [];
     let units = [];
-    // note: tft-champion.json gives correct costs. change to this instead of rarity
+    // units are sorted by rarity -- a 5 cost will be displayed before a 4 cost unit
     const sortedUnits = participant.units.sort((a, b) => b.rarity - a.rarity);
     for (const unit of sortedUnits) {
       if (!unit) {
@@ -93,17 +100,10 @@ export const fetchPlayerMatchData = async (playerData) => {
       }
 
       let unitID = unit.character_id.toLowerCase();
-      const unitItemNames = unit.itemNames; // need images for this too
-      const unitName = unit.name;  // often blank
-      const unitRarity = unit.rarity; // doesn't equate to unit cost
       const unitTier = unit.tier; // 1* 2* etc
 
-      if ((unitID || unitItemNames || unitName || unitRarity || unitTier) == null) {
-        console.log(`Error with units -- units id: ${unitID} unit items: ${unitItemNames} unit name (usually blank) ${unitName} unit rarity: ${unitRarity} unit star tier: ${unitTier}`)
-      }
-
+      // no images for these units
       if (unitID === "tft13_jaycesummon" || unitID === "tft13_sion"){
-        console.log("skipping", unitID)
         continue;
       }
 
@@ -125,7 +125,6 @@ export const fetchPlayerMatchData = async (playerData) => {
         console.error(`Error fetching trait image for unit: ${unitID}`, error);
       }
     }
-
 
     try {
         const tacticianImageUrl = await getDownloadURL(tacticianImageStorageRef);

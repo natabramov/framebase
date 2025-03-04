@@ -31,6 +31,7 @@ const Signup = () => {
 }
 
   async function handleSignup(){
+    // splits riot id into username and usertag for the API call
     const [riotUsername, riotUsertag] = riotId.split('#');
     const isValidEmail = await validateEmail()
     console.log('isValidEmail', isValidEmail)
@@ -39,6 +40,7 @@ const Signup = () => {
     }
     
     try{
+        // validate riot username and usertag
         const response = await fetch(`/api/checkPlayer?username=${riotUsername}&usertag=${riotUsertag}`)
         if (!response.ok) {
           const errorData = await response.json();
