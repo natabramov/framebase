@@ -74,7 +74,6 @@ const Dashboard = () => {
         }
       }
     };
-	console.log("ranked data", rankedData)
     fetchRankedDataIcons();
   }, [playerData]);
   
@@ -96,7 +95,7 @@ const Dashboard = () => {
           matchDataArray.push(matchData);
         }
         catch (error) {
-          console.log("error:", error);
+          console.log("Error loading match data images:", error);
         }
       }
         
@@ -168,7 +167,7 @@ const Dashboard = () => {
 
       <InnerPageContainer>
         <MiddleContainer>
-        {loading ? (<SpinnerContainer><Spinner /><p>Loading match history...</p></SpinnerContainer>) : (
+        {loading ? (<SpinnerContainer><Spinner /><p>Loading match history...</p><p>(This may take up to a minute)</p></SpinnerContainer>) : (
           // if not loading, display the match data. this match data includes all icons that are related to the game, including
           // player profile pictures, final levels, damage dealt to other players, all trait images that were played, and all units including star info
           playerMatchData?.map((match, matchIndex) => (

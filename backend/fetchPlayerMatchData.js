@@ -21,7 +21,6 @@ function convertUnixToDate(unixTime) {
 }
 
 export const fetchPlayerMatchData = async (playerData) => {
-  console.log("player data", playerData)
   if (!playerData.info.participants) {
     console.log("No match data available.");
     return [];

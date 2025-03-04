@@ -20,9 +20,7 @@ const Signup = () => {
       alert("Email is invalid.")
         return false;
     }
-    console.log('so far so good...')
     const emailExists  = await isEmailInUse(email)
-    console.log('email response', emailExists )
     if (emailExists){
       alert("Email is already in use.")
         return false; 
