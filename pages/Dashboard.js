@@ -74,6 +74,7 @@ const Dashboard = () => {
         }
       }
     };
+	console.log("ranked data", rankedData)
     fetchRankedDataIcons();
   }, [playerData]);
   
@@ -155,7 +156,7 @@ const Dashboard = () => {
                     <RankedInfo>
                       {entry.ratedTier || entry.tier}{" "}
                       {/* hyperroll uses ratedRating instead of leaguePoints */}
-                      {entry.ratedRating ? `${entry.ratedRating} LP` : `${entry.leaguePoints} LP`}
+                      {entry.ratedRating ? `${entry.ratedRating} LP` : `${entry.rank} ${entry.leaguePoints} LP`}
                     </RankedInfo>
                   </PlayerRankCard>))}
       </PlayerInfo>
