@@ -1,4 +1,3 @@
-// Post.js
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { CgProfile } from 'react-icons/cg';
@@ -18,22 +17,20 @@ const Post = () => {
       <PostImage />
 
       <PostActions>
-        <LikeButton liked={liked} onClick={() => setLiked(!liked)}>
+        <TradeButton liked={liked} onClick={() => setLiked(!liked)}>
           <MdAttachMoney />
-        </LikeButton>
+        </TradeButton>
         <ShareButton>
           <IoIosSend />
         </ShareButton>
       </PostActions>
 
       <Caption>
-        <strong>sunsetgirl_23</strong> This concert was everything 🌟🎶
+        <strong>sunsetgirl_23</strong> hello
       </Caption>
     </PostContainer>
   );
 };
-
-export default Post;
 
 const PostContainer = styled.div`
   width: 100%;
@@ -42,6 +39,7 @@ const PostContainer = styled.div`
   border: 1px solid #dbdbdb;
   border-radius: 10px;
   margin-bottom: 20px;
+  font-family: "Inter", serif;
 `;
 
 const PostHeader = styled.div`
@@ -72,13 +70,13 @@ const PostActions = styled.div`
   gap: 10px;
 `;
 
-const LikeButton = styled.button`
+const TradeButton = styled.button`
   background-color: ${({ liked }) => (liked ? '#4caf50' : '#fff')};
   border: none;
   border-radius: 50%;
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 20px;
 
   &:hover {
     background-color: ${({ liked }) => (liked ? '#45a049' : '#f0f0f0')};
@@ -106,3 +104,5 @@ const Caption = styled.div`
     margin-right: 5px;
   }
 `;
+
+export default Post;

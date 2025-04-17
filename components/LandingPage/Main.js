@@ -1,4 +1,3 @@
-// Main.js
 import React from 'react';
 import styled from 'styled-components';
 import { IoIosHome, IoIosSearch, IoIosAdd, IoIosNotifications } from 'react-icons/io';
@@ -31,10 +30,11 @@ export default MainPage;
 
 const Container = styled.div`
   display: flex;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   background-color: #fafafa;
   position: relative;
+  overflow-y: visible;
 `;
 
 const Sidebar = styled.div`
@@ -49,14 +49,19 @@ const Sidebar = styled.div`
   flex-direction: column;
   gap: 16px;
 
+  @media (max-width: 1200px) {
+    width: 70px;
+  }
+
   @media (max-width: 768px) {
     display: none;
   }
 `;
 
 const Feed = styled.div`
-  flex: 0.6;
-  padding: 30px 40px;
+  flex: 1;
+  margin-left: 180px; /* keep this for sidebar offset */
+  padding: 80px 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
