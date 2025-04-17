@@ -1,11 +1,11 @@
-import Hero from "../components/LandingPage/Hero"
-import NavBar from "../components/Dashboard/Navbar";
+import Main from "../components/LandingPage/Main"
+import Navbar from "../components/Navbar"
 
 export default function HomePage() {
   return (
     <>
-      <NavBar/>
-      <Hero/>
+      <Navbar/>
+      <Main/>
     </>
   );
 }
