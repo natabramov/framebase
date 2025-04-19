@@ -8,8 +8,6 @@ import { IoIosSearch } from "react-icons/io";
 // #dda15e
 // #bc6c25
 
-
-
 const Navbar = () => {
   return (
     <Nav>
@@ -18,15 +16,16 @@ const Navbar = () => {
         <IoIosSearch className="search-icon" />
         <SearchInput placeholder="Search" />
       </SearchWrapper>
-      <LoginButton>Log in</LoginButton>
+      <LoginButton>Log in with MetaMask</LoginButton>
     </Nav>
   );
 };
 
 const Nav = styled.nav`
+/* navbar needs to stay on the page when the user is scrolling */
   display: flex;
   position: fixed;
-  z-index: 100000;
+  z-index: 1000;
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;

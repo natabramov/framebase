@@ -3,21 +3,23 @@ import styled from 'styled-components';
 import { CgProfile } from 'react-icons/cg';
 import { MdAttachMoney } from 'react-icons/md';
 import { IoIosSend } from 'react-icons/io';
+import Link from 'next/link';
 
-const Post = () => {
-  const [liked, setLiked] = useState(false);
+const Post = ({ username, caption, image }) => {
+  const [traded, setTraded] = useState(false);
 
   return (
     <PostContainer>
       <PostHeader>
         <ProfileIcon />
-        <Username>sunsetgirl_23</Username>
+        <UsernameLink href={`/profile`}> 
+        {/* will be /profile/username in the future^^^ */}
+        <Username>{username}</Username>
+        </UsernameLink>
       </PostHeader>
-
-      <PostImage />
-
+      <PostImage src={image} alt="Post" />
       <PostActions>
-        <TradeButton liked={liked} onClick={() => setLiked(!liked)}>
+        <TradeButton traded={traded} onClick={() => setTraded(!traded)}>
           <MdAttachMoney />
         </TradeButton>
         <ShareButton>
@@ -26,17 +28,22 @@ const Post = () => {
       </PostActions>
 
       <Caption>
-        <strong>sunsetgirl_23</strong> hello
+        <strong>{username}</strong> {caption}
       </Caption>
     </PostContainer>
   );
 };
 
+const UsernameLink = styled(Link)`
+  text-decoration: none;
+  color: black;
+  `
+
 const PostContainer = styled.div`
   width: 100%;
   max-width: 500px;
   background: white;
-  border: 1px solid #dbdbdb;
+  border: 1px solid rgb(219, 219, 219);
   border-radius: 10px;
   margin-bottom: 20px;
   font-family: "Inter", serif;
@@ -58,9 +65,11 @@ const Username = styled.div`
   font-size: 15px;
 `;
 
-const PostImage = styled.div`
-  height: 400px;
-  background: #eee;
+const PostImage = styled.img`
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
 `;
 
 const PostActions = styled.div`
@@ -71,16 +80,12 @@ const PostActions = styled.div`
 `;
 
 const TradeButton = styled.button`
-  background-color: ${({ liked }) => (liked ? '#4caf50' : '#fff')};
+  background-color: ${({ traded }) => (traded ? '#7df081' : 'white')};
   border: none;
   border-radius: 50%;
   padding: 12px;
   cursor: pointer;
   font-size: 20px;
-
-  &:hover {
-    background-color: ${({ liked }) => (liked ? '#45a049' : '#f0f0f0')};
-  }
 `;
 
 const ShareButton = styled.button`
@@ -88,17 +93,12 @@ const ShareButton = styled.button`
   border: none;
   font-size: 22px;
   cursor: pointer;
-  color: #333;
-
-  &:hover {
-    color: #000;
-  }
 `;
 
 const Caption = styled.div`
-  padding: 10px;
+  padding: 16px;
   font-size: 14px;
-  color: #333;
+  color: black;
 
   strong {
     margin-right: 5px;

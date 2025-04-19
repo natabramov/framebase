@@ -1,24 +1,31 @@
 import React from 'react';
 import styled from 'styled-components';
-import { IoIosHome, IoIosSearch, IoIosAdd, IoIosNotifications } from 'react-icons/io';
-import { CgProfile } from 'react-icons/cg';
 import Post from './Post';
-import SidebarButton from './SidebarButton';
+import Sidebar from './Sidebar';
 
 const MainPage = () => {
   return (
     <Container>
-      <Sidebar>
-      <SidebarButton icon={IoIosHome} label="Home" />
-        <SidebarButton icon={IoIosSearch} label="Search" />
-        <SidebarButton icon={IoIosAdd} label="Post" />
-        <SidebarButton icon={IoIosNotifications} label="Notifications" />
-        <SidebarButton icon={CgProfile} label="Profile" />
-      </Sidebar>
+      <Sidebar/>
 
       <Feed>
-        <Post />
-        <Post />
+        <Post
+          username="username"
+          caption="tyrol, austria"
+          image="/posts/austria.jpg"
+        />
+
+        <Post
+          username="username"
+          caption="munich, germany"
+          image="/posts/munich.jpg"
+        />
+
+        <Post
+          username="username"
+          caption="casablanca, morocco"
+          image="/posts/casablanca.jpg"
+        />
       </Feed>
 
       <RightSpace />
@@ -26,41 +33,18 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
-
 const Container = styled.div`
   display: flex;
-  height: 100%;
+  min-height: 100vh;
   width: 100%;
-  background-color: #fafafa;
+  background-color:rgb(239, 239, 239);
   position: relative;
   overflow-y: visible;
 `;
 
-const Sidebar = styled.div`
-  position: fixed;
-  top: 56px;
-  height: 100vh;
-  width: 220px;
-  background-color: #fff;
-  border-right: 1px solid lightgray;
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  @media (max-width: 1200px) {
-    width: 70px;
-  }
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
 const Feed = styled.div`
   flex: 1;
-  margin-left: 180px; /* keep this for sidebar offset */
+  margin-left: 180px;
   padding: 80px 0px;
   display: flex;
   flex-direction: column;
@@ -70,3 +54,5 @@ const Feed = styled.div`
 const RightSpace = styled.div`
   flex: 0.2;
 `;
+
+export default MainPage;
