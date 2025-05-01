@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { IoIosSearch } from "react-icons/io";
+import { useStateContext } from "../context/StateContext";
+import CreateAccountPopup from "./CreateAccountPopup";
 
 // #606c38
 // #283618
@@ -9,16 +11,27 @@ import { IoIosSearch } from "react-icons/io";
 // #bc6c25
 
 const Navbar = () => {
-  return (
-    <Nav>
-      <Logo />
-      <SearchWrapper>
-        <IoIosSearch className="search-icon" />
-        <SearchInput placeholder="Search" />
-      </SearchWrapper>
-      <LoginButton>Log in with MetaMask</LoginButton>
-    </Nav>
-  );
+    const { showAccountPopup, setShowAccountPopup, completeAccount, connectWallet, user } = useStateContext();
+
+    return (
+        <>
+                <Nav>
+            <Logo />
+            <SearchWrapper>
+                <IoIosSearch className="search-icon" />
+                <SearchInput placeholder="Search" />
+            </SearchWrapper>
+            <LoginButton onClick={connectWallet}>{user ? `Logged in as ${user.substring(0, 6)}…${user.substring(user.length - 6)}` : "Log in with MetaMask"}</LoginButton>
+        </Nav>
+                {showAccountPopup && (
+                    <CreateAccountPopup
+                        isOpen={showAccountPopup}
+                        onClose={() => setShowAccountPopup(false)}
+                        onSubmit={completeAccount}
+                    />
+                    )}
+        </>
+    );
 };
 
 const Nav = styled.nav`

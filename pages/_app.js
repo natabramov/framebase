@@ -26,9 +26,9 @@ export default function App({ Component, pageProps }) {
     return (
             <>
             <GlobalStyle />
-            <StateContext>
-            {isClient && <Component {...pageProps} />}
-            </StateContext>
+              <StateContext>
+              {isClient && <Component {...pageProps} />}
+              </StateContext>
             </>
     );
 }
