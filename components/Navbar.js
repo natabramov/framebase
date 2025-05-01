@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { IoIosSearch } from "react-icons/io";
 import { useStateContext } from "../context/StateContext";
 import CreateAccountPopup from "./CreateAccountPopup";
+import PostNFT from "../contracts/PostNFT.json";
+import { ethers } from 'ethers';
+import Link from 'next/link';
 
 // #606c38
 // #283618
@@ -11,25 +14,54 @@ import CreateAccountPopup from "./CreateAccountPopup";
 // #bc6c25
 
 const Navbar = () => {
-    const { showAccountPopup, setShowAccountPopup, completeAccount, connectWallet, user } = useStateContext();
+    const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138";
+    const { showAccountPopup, setShowAccountPopup, completeAccount, connectWallet, logout, user } = useStateContext();
 
+    // testing minting
+    const handleTestMint = async () => {
+        if (!window.ethereum || !user) {
+            alert("Connect MetaMask");
+            return;
+        }
+    
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(contractAddress, PostNFT.abi, signer);
+    
+            const tx = await contract.mintNFT(user, "");
+            await tx.wait();
+
+            alert("NFT minted!");
+        } catch (error) {
+            console.error(error);
+            alert("Minting failed: " + error.message);
+        }
+    };
+    
     return (
         <>
-                <Nav>
-            <Logo />
+        <Nav>
+            <LogoLink href="/">
+                <Logo />
+            </LogoLink>
             <SearchWrapper>
                 <IoIosSearch className="search-icon" />
                 <SearchInput placeholder="Search" />
             </SearchWrapper>
-            <LoginButton onClick={connectWallet}>{user ? `Logged in as ${user.substring(0, 6)}…${user.substring(user.length - 6)}` : "Log in with MetaMask"}</LoginButton>
+            
+            {user ? (
+                <>
+                    {/* test minting button, will be removed*/}
+                    <LoginButton onClick={handleTestMint}>Mint testing</LoginButton>
+                    <LogoutButton onClick={logout}>Log Out</LogoutButton>
+                </>
+            ) : (<LoginButton onClick={connectWallet}>Log in with MetaMask</LoginButton>)}
         </Nav>
-                {showAccountPopup && (
-                    <CreateAccountPopup
+                {showAccountPopup && (<CreateAccountPopup
                         isOpen={showAccountPopup}
                         onClose={() => setShowAccountPopup(false)}
-                        onSubmit={completeAccount}
-                    />
-                    )}
+                        onSubmit={completeAccount}/>)}
         </>
     );
 };
@@ -45,6 +77,11 @@ const Nav = styled.nav`
   border-bottom: 1px solid lightgray;
   background-color: white;
   width: 100%;
+`;
+
+const LogoLink = styled.a`
+  text-decoration: none;
+  cursor: pointer;
 `;
 
 const Logo = styled.div`
@@ -90,6 +127,17 @@ const LoginButton = styled.button`
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  margin-left: 10px;
+`;
+
+const LogoutButton = styled.button`
+  background-color: #bc6c25;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 10px;
 `;
 
 export default Navbar;

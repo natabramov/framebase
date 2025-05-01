@@ -1,17 +1,40 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { checkUsernameAvailability } from '../firebase/UserServices';
 
 const CreateAccountPopup = ({ isOpen, onClose, onSubmit }) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  if (!isOpen) return null;
+  // if the popup is not open, return null
+  if (!isOpen) {
+    return null;
+  }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email && username) {
+    if (!email || !username) {
+      setErrorMessage('Email and username are required');
+      return;
+    }
+
+    setErrorMessage('');
+    
+    try {
+      // when the user submits the form, check if the username is available
+      const isAvailable = await checkUsernameAvailability(username);
+      
+      if (!isAvailable) {
+        setErrorMessage('Username is already taken');
+        return;
+      }
+      
       onSubmit({ email, username });
       onClose();
+    } catch (error) {
+      console.error("Error during account creation:", error);
+      setErrorMessage('Error creating account. Please try again.');
     }
   };
 
@@ -29,12 +52,15 @@ const CreateAccountPopup = ({ isOpen, onClose, onSubmit }) => {
           />
           <Input
             type="text"
-            placeholder="Username"
+            placeholder="Username (cannot be changed)"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
-          <SubmitButton type="submit">Continue</SubmitButton>
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+          <SubmitButton type="submit">
+            Continue
+          </SubmitButton>
         </Form>
         <CloseButton onClick={onClose}>×</CloseButton>
       </ModalContainer>
@@ -80,6 +106,12 @@ const Input = styled.input`
   margin-bottom: 16px;
   border: none;
   border-radius: 6px;
+  font-size: 14px;
+`;
+
+const ErrorMessage = styled.p`
+  color: #ff4747;
+  margin-bottom: 16px;
   font-size: 14px;
 `;
 
