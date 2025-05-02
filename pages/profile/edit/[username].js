@@ -132,6 +132,7 @@ const Container = styled.div`
   max-width: 600px;
   margin: 100px auto 0;
   padding: 0 20px;
+  font-family: 'Inter', sans-serif;
 `;
 
 const FormHeader = styled.h1`

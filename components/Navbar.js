@@ -18,9 +18,12 @@ const Navbar = () => {
     return (
         <>
         <Nav>
+          <LogoContainer>
             <LogoLink href="/">
                 <Logo />
             </LogoLink>
+            <AppName>Framebase</AppName>
+          </LogoContainer>
             <SearchWrapper>
                 <IoIosSearch className="search-icon" />
                 <SearchInput placeholder="Search" />
@@ -58,6 +61,19 @@ const Nav = styled.nav`
   border-bottom: 1px solid lightgray;
   background-color: white;
   width: 100%;
+`;
+
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const AppName = styled.h1`
+  margin: 0;
+  font-size: 18px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
 `;
 
 const LogoLink = styled(Link)`
