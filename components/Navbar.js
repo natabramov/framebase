@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import { IoIosSearch } from "react-icons/io";
 import { useStateContext } from "../context/StateContext";
 import CreateAccountPopup from "./CreateAccountPopup";
-import PostNFT from "../contracts/PostNFT.json";
-import { ethers } from 'ethers';
 import Link from 'next/link';
 
 // #606c38
@@ -14,30 +12,7 @@ import Link from 'next/link';
 // #bc6c25
 
 const Navbar = () => {
-    const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138";
     const { showAccountPopup, setShowAccountPopup, completeAccount, connectWallet, logout, user } = useStateContext();
-
-    // testing minting
-    const handleTestMint = async () => {
-        if (!window.ethereum || !user) {
-            alert("Connect MetaMask");
-            return;
-        }
-    
-        try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const contract = new ethers.Contract(contractAddress, PostNFT.abi, signer);
-    
-            const tx = await contract.mintNFT(user, "");
-            await tx.wait();
-
-            alert("NFT minted!");
-        } catch (error) {
-            console.error(error);
-            alert("Minting failed: " + error.message);
-        }
-    };
     
     return (
         <>
@@ -52,8 +27,6 @@ const Navbar = () => {
             
             {user ? (
                 <>
-                    {/* test minting button, will be removed*/}
-                    <LoginButton onClick={handleTestMint}>Mint testing</LoginButton>
                     <LogoutButton onClick={logout}>Log Out</LogoutButton>
                 </>
             ) : (<LoginButton onClick={connectWallet}>Log in with MetaMask</LoginButton>)}

@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { ethers } from "ethers";
 import { useRouter } from 'next/router';
 import { db } from "../firebase/Firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { initializeContractListeners } from "../firebase/ContractListeners";
 
 const Context = createContext();
 
@@ -12,6 +13,48 @@ export const StateContext = ({ children }) => {
     const [username, setUsername] = useState(null);
     const [email, setEmail] = useState(null);
     const router = useRouter();
+    const [provider, setProvider] = useState(null);
+    const contractListenersRef = useRef(null);
+
+    // cleanupContractListeners stops the app from listening to blockchain events when needed
+    const cleanupContractListeners = async () => {
+        if (contractListenersRef.current) {
+            try {
+                contractListenersRef.current.removeListeners();
+                contractListenersRef.current = null;
+            } 
+            
+            catch (error) {
+                console.error("Error cleaning up contract listeners:", error);
+            }
+        }
+    };
+
+    // sets up listeners that watch for blockchain events related to the app
+    useEffect(() => {
+        // need both a connection to the blockchain AND a logged-in user
+        if (provider && user) {
+            const setupListeners = async () => {
+                try {
+                    await cleanupContractListeners();
+                    const listeners = await initializeContractListeners(provider);
+                    // save the listeners in a reference so we can turn them off later
+                    contractListenersRef.current = listeners;
+                } 
+                
+                catch (error) {
+                    console.error("Failed to initialize contract listeners:", error);
+                }
+            };
+            
+            setupListeners();
+        }
+        
+        // runs when the component is about to disappear from the screen
+        return () => {
+            cleanupContractListeners();
+        };
+    }, [provider, user]);
 
     const connectWallet = async () => {
         console.log("connectWallet called");
@@ -20,10 +63,11 @@ export const StateContext = ({ children }) => {
             return;
         }
         try {
-            // From documentation: 
+            // from documentation: 
             // A Web3Provider wraps a standard Web3 provider, which is
             // what MetaMask injects as window.ethereum into each page
             const provider = new ethers.providers.Web3Provider(window.ethereum);
+            setProvider(provider);
 
             // MetaMask requires requesting permission to connect users accounts
             await provider.send("eth_requestAccounts", []);
@@ -35,16 +79,16 @@ export const StateContext = ({ children }) => {
             const address = await signer.getAddress();
             setUser(address);
             
-            // Check if user already exists in Firebase
+            // check if user already exists in Firebase
             const userDoc = await getDoc(doc(db, "users", address));
             if (userDoc.exists()) {
-                // User exists, load their data
+                // user exists, load their data
                 const userData = userDoc.data();
                 setEmail(userData.email);
                 setUsername(userData.username);
                 router.push(`/profile/${userData.username}`);
             } else {
-                // New user, show account creation popup
+                // new user, show account creation popup where they can create a username and enter email
                 setShowAccountPopup(true);
             }
         }
@@ -57,10 +101,12 @@ export const StateContext = ({ children }) => {
         setUser(null);
         setUsername(null);
         setEmail(null);
+        cleanupContractListeners();
+        setProvider(null);
         router.push('/');
     };
 
-    // Stores account data in Firebase cloud firestore
+    // stores account data in Firebase cloud firestore
     const completeAccount = async ({ email, username }) => {
         try {
             if (!user) return;
@@ -90,7 +136,8 @@ export const StateContext = ({ children }) => {
             setShowAccountPopup,
             completeAccount,
             username,
-            email
+            email,
+            provider
         }}>
         {children}
         </Context.Provider>

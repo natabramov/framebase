@@ -2,26 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { getUserByUsername } from '../../firebase/UserServices';
+import { getUserPosts } from '../../firebase/PostServices';
 import { useStateContext } from '../../context/StateContext';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/LandingPage/Sidebar';
 import Post from '../../components/LandingPage/Post';
+import CreatePostPopup from '../../components/CreatePostPopup';
 
 const ProfilePage = () => {
   const router = useRouter();
   const { username } = router.query;
   const [profileData, setProfileData] = useState(null);
-  // loading state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useStateContext();
+  const [showCreatePost, setShowCreatePost] = useState(false);
   
-  // sample posts - will be replaced with actual NFT data from blockchain IPFS storage
+  // posts from Firebase
   const [posts, setPosts] = useState([]);
   
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (!username) return;
+      if (!username) {
+        return;
+      }
       
       try {
         setLoading(true);
@@ -29,27 +33,39 @@ const ProfilePage = () => {
         
         if (userData) {
           setProfileData(userData);
-          setPosts([
-            {
+          
+          // fetch user's posts from Firebase
+          const userPostsData = await getUserPosts(userData.walletAddress);
+          
+          console.log('Raw user posts data:', userPostsData);
+          
+          // transform posts data for rendering - image URL comes from getUserPosts
+          const formattedPosts = userPostsData.map(post => {
+            console.log(`Post ${post.id} image URL:`, post.image);
+            
+            return {
+              id: post.id,
               username: userData.username,
-              caption: "My first NFT post",
-              image: "/posts/lori1.jpg",
-              nftTokenId: "1",
-            },
-            {
-              username: userData.username,
-              caption: "Another great NFT post",
-              image: "/posts/lori2.jpg",
-              nftTokenId: "2",
-            }
-          ]);
-        } else {
+              caption: post.caption || '',
+              image: post.image, 
+              tokenId: post.tokenId,
+            };
+          });
+          
+          setPosts(formattedPosts);
+        } 
+        
+        else {
           setError('User not found');
         }
-      } catch (err) {
-        console.error("Error fetching profile:", err);
+      } 
+      
+      catch (error) {
+        console.error("Error fetching profile:", error);
         setError('Failed to load profile');
-      } finally {
+      } 
+      
+      finally {
         setLoading(false);
       }
     };
@@ -74,10 +90,16 @@ const ProfilePage = () => {
                 <WalletAddress>
                   Wallet Address: {profileData.walletAddress}
                 </WalletAddress>
+                {/* user must be the owner of the profile to edit it */}
                 {isOwnProfile && (
-                  <EditButton onClick={() => router.push(`/profile/edit/${username}`)}>
-                    Edit Profile
-                  </EditButton>
+                  <ButtonContainer>
+                    <EditButton onClick={() => router.push(`/profile/edit/${username}`)}>
+                      Edit Profile
+                    </EditButton>
+                    <CreatePostButton onClick={() => setShowCreatePost(true)}>
+                      Create Post
+                    </CreatePostButton>
+                  </ButtonContainer>
                 )}
               </Info>
             </Header>
@@ -86,7 +108,11 @@ const ProfilePage = () => {
             
             <Grid>
               {posts.length === 0 ? (
-                <EmptyState>No NFTs yet. Mint your first NFT post!</EmptyState>
+                <EmptyState>
+                  {isOwnProfile 
+                    ? "You don't have any NFT posts yet. Create one!" 
+                    : "No NFTs yet."}
+                </EmptyState>
               ) : (
                 posts.map((post, idx) => (
                   <GridItem key={idx}>
@@ -94,6 +120,7 @@ const ProfilePage = () => {
                       username={post.username}
                       caption={post.caption}
                       image={post.image}
+                      tokenId={post.tokenId}
                     />
                   </GridItem>
                 ))
@@ -102,6 +129,10 @@ const ProfilePage = () => {
           </>
         )}
       </Container>
+      
+      {showCreatePost && (
+        <CreatePostPopup onClose={() => setShowCreatePost(false)} />
+      )}
     </>
   );
 };
@@ -158,6 +189,11 @@ const WalletAddress = styled.p`
   margin: 4px 0 0;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+`;
 
 const SectionTitle = styled.h2`
   font-size: 20px;
@@ -191,7 +227,16 @@ const EditButton = styled.button`
   border-radius: 8px;
   padding: 8px 16px;
   cursor: pointer;
-  margin-top: 10px;
+  align-self: flex-start;
+`;
+
+const CreatePostButton = styled.button`
+  background-color: #606c38;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
   align-self: flex-start;
 `;
 

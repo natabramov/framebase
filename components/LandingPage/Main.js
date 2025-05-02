@@ -1,31 +1,78 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Post from './Post';
 import Sidebar from './Sidebar';
+import { getAllPosts } from '../../firebase/PostServices';
+
+// helper function to get IPFS URL from CID or path
+const getIPFSUrl = (imageSrc) => {
+  if (!imageSrc) {
+    return '';
+  }
+  
+  if (imageSrc.startsWith('bafy')) {
+    return `https://gateway.pinata.cloud/ipfs/${imageSrc}`;
+  }
+
+  return imageSrc;
+};
 
 const MainPage = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // fetch posts from Firebase
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const fetchedPosts = await getAllPosts();
+        setPosts(fetchedPosts || []);
+      } 
+      
+      catch (error) {
+        console.error("Error fetching posts:", error);
+        setPosts([]);
+      } 
+      
+      finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return (
+      <Container>
+        <Sidebar />
+        <Feed>
+          <Text>Loading posts...</Text>
+        </Feed>
+        <RightSpace />
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Sidebar/>
 
       <Feed>
-        <Post
-          username="username"
-          caption="tyrol, austria"
-          image="/posts/austria.jpg"
-        />
-
-        <Post
-          username="username"
-          caption="munich, germany"
-          image="/posts/munich.jpg"
-        />
-
-        <Post
-          username="username"
-          caption="casablanca, morocco"
-          image="/posts/casablanca.jpg"
-        />
+        {posts.length > 0 ? (
+          posts.map(post => (
+            <Post
+              key={post.id}
+              username={post.username}
+              caption={post.caption}
+              image={getIPFSUrl(post.image)}
+              tokenId={post.tokenId || post.id}
+            />
+          ))
+        ) : (
+          <Text>No posts yet. Create one!</Text>
+        )}
       </Feed>
 
       <RightSpace />
@@ -53,6 +100,12 @@ const Feed = styled.div`
 
 const RightSpace = styled.div`
   flex: 0.2;
+`;
+
+const Text = styled.div`
+  font-size: 1.2rem;
+  color: rgb(102, 102, 102);
+  margin-top: 2rem;
 `;
 
 export default MainPage;

@@ -11,13 +11,8 @@ const EditProfilePage = () => {
   
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({
-    email: '',
-    username: '',
-    bio: ''
-  });
+  const [formData, setFormData] = useState({email: '', username: '', bio: ''});
   
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -49,7 +44,7 @@ const EditProfilePage = () => {
   }, [username]);
   
   useEffect(() => {
-    // Security check - only owner can edit profile
+    // only owner can edit profile
     if (profileData && user && profileData.walletAddress !== user) {
       router.push(`/profile/${username}`);
     }
@@ -64,12 +59,9 @@ const EditProfilePage = () => {
     e.preventDefault();
     
     try {
-      setSaving(true);
-      
-      // Only allow username changes if username has not changed
+      // only allow username changes if username has not changed -- first time it's set
       if (formData.username !== username) {
         setError("Username cannot be changed");
-        setSaving(false);
         return;
       }
       
@@ -82,7 +74,6 @@ const EditProfilePage = () => {
     } catch (err) {
       console.error("Error updating profile:", err);
       setError('Failed to update profile');
-      setSaving(false);
     }
   };
   
@@ -129,13 +120,8 @@ const EditProfilePage = () => {
         </FormGroup>
         
         <ButtonGroup>
-          <CancelButton type="button" onClick={() => router.push(`/profile/${username}`)}>
-            Cancel
-          </CancelButton>
-          
-          <SaveButton type="submit" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Changes'}
-          </SaveButton>
+          <CancelButton type="button" onClick={() => router.push(`/profile/${username}`)}>Cancel</CancelButton>
+          <SaveButton type="submit">Save Changes</SaveButton>
         </ButtonGroup>
       </Form>
     </Container>
@@ -154,7 +140,7 @@ const FormHeader = styled.h1`
 `;
 
 const ErrorMessage = styled.div`
-  background-color: #ffebee;
+  background-color: rgb(255, 235, 238);
   color: #c62828;
   padding: 12px;
   border-radius: 4px;
@@ -179,26 +165,26 @@ const Label = styled.label`
 
 const Input = styled.input`
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid rgb(221, 221, 221);
   border-radius: 4px;
   font-size: 16px;
   
   &:disabled {
-    background-color: #f5f5f5;
+    background-color: rgb(245, 245, 245);
     cursor: not-allowed;
   }
 `;
 
 const TextArea = styled.textarea`
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid rgb(221, 221, 221);
   border-radius: 4px;
   font-size: 16px;
   resize: vertical;
 `;
 
 const HelperText = styled.p`
-  color: #666;
+  color: rgb(102, 102, 102);
   font-size: 14px;
   margin-top: 4px;
 `;
@@ -219,18 +205,13 @@ const Button = styled.button`
 `;
 
 const CancelButton = styled(Button)`
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: rgb(245, 245, 245);
+  color: rgb(51, 51, 51);
 `;
 
 const SaveButton = styled(Button)`
   background-color: #283618;
   color: white;
-  
-  &:disabled {
-    background-color: #6b705c;
-    cursor: not-allowed;
-  }
 `;
 
 export default EditProfilePage; 
