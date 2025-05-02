@@ -56,6 +56,20 @@ The `PostNFT.sol` smart contract extends OpenZeppelin's ERC721URIStorage and Own
   - `Minted`: Triggered when a new post is created
   - `PostOwnershipTransferred`: Triggered when a post changes ownership
 
+### Smart Contract Operations
+
+The PostNFT contract has multiple blockchain read and write operations:
+
+#### Reads:
+- **getPostDetails**: Reads creator address, timestamp, and IPFS hash from the blockchain
+- **isCreator**: Verifies if an address is the original creator of a post
+- **ownerOf**: Check current ownership of posts
+
+#### Writes:
+- **mintPost**: Writes multiple values including ownership assignment, metadata storage, and token counter
+- **transferPost**: Changes ownership state by transferring a post to another address
+- **_setTokenURI**: Sets the metadata URI for each token
+
 ## Blockchain-Firebase Integration
 
 The `ContractListeners.js` file serves as the bridge between the blockchain and the Firebase database:
