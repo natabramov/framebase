@@ -1,3 +1,11 @@
+/**
+ * Profile Edit Page
+ * - Form to update email and bio
+ * - Username cannot be changed
+ * - Validation to ensure only the profile owner can make changes
+ * - Redirects unauthorized users back to the profile page
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';

@@ -1,3 +1,11 @@
+/**
+ * Profile Page
+ * - Displays user information (username, bio, wallet address)
+ * - Shows all NFT posts created by the user
+ * - Allows profile owners to edit their profile or create new posts
+ * - Dynamic routing based on username parameter
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';

@@ -1,3 +1,10 @@
+/**
+ * Landing Page
+ * - Nav bar
+ * - Main content area showing the post feed
+ * - Sidebar with navigation options
+ */
+
 import Main from "../components/LandingPage/Main"
 import Navbar from "../components/Navbar"
 
