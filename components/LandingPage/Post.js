@@ -208,9 +208,6 @@ const Post = ({ username, caption, image, tokenId }) => {
             <MdAttachMoney />
           </TradeButton>
         </ActionGroup>
-        <ShareButton>
-          <IoIosSend />
-        </ShareButton>
       </PostActions>
 
       {/* show 1 like or 2+ likes */}

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import SidebarButton from './SidebarButton';
-import { IoIosHome, IoIosSearch, IoIosAdd, IoIosNotifications } from 'react-icons/io';
+import { IoIosHome, IoIosAdd } from 'react-icons/io';
 import { CgProfile } from 'react-icons/cg';
 import CreatePostPopup from '../CreatePostPopup';
 import React, { useState } from 'react';
@@ -25,9 +25,7 @@ const Sidebar = () => {
         <>
         <SidebarContainer>
             <SidebarButton icon={IoIosHome} label="Home" href="/" />
-            <SidebarButton icon={IoIosSearch} label="Search" href="/search" />
             <SidebarButton icon={IoIosAdd} label="Post" onClick={() => setShowModal(true)}/>
-            <SidebarButton icon={IoIosNotifications} label="Notifications" href="/notifications" />
             {/* if the user is not logged in, the profile button will be a sign in button */}
             <SidebarButton 
                 icon={CgProfile} 

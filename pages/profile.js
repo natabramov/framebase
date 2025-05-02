@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Sidebar from '../components/LandingPage/Sidebar';
 import Post from '../components/LandingPage/Post';
 import Navbar from '../components/Navbar';
+import { CgProfile } from 'react-icons/cg';
 
 export default function ProfilePage() {
   return (
@@ -11,7 +12,7 @@ export default function ProfilePage() {
       <Sidebar />
       <Container>
         <Header>
-          <ProfilePic />
+          <ProfileIcon />
           <Info>
             <Username>@username</Username>
             <Bio>example bio</Bio>
@@ -68,11 +69,8 @@ const Header = styled.div`
   margin-bottom: 40px;
 `;
 
-const ProfilePic = styled.div`
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color:rgb(187, 187, 187);
+const ProfileIcon = styled(CgProfile)`
+  font-size: 80px;
   margin-right: 20px;
 `;
 

@@ -4,6 +4,7 @@ import { IoIosSearch } from "react-icons/io";
 import { useStateContext } from "../context/StateContext";
 import CreateAccountPopup from "./CreateAccountPopup";
 import Link from 'next/link';
+import { CgProfile } from "react-icons/cg";
 
 // #606c38
 // #283618
@@ -12,7 +13,7 @@ import Link from 'next/link';
 // #bc6c25
 
 const Navbar = () => {
-    const { showAccountPopup, setShowAccountPopup, completeAccount, connectWallet, logout, user } = useStateContext();
+    const { showAccountPopup, setShowAccountPopup, completeAccount, connectWallet, logout, user, username } = useStateContext();
     
     return (
         <>
@@ -26,10 +27,17 @@ const Navbar = () => {
             </SearchWrapper>
             
             {user ? (
-                <>
+                <UserSection>
+                    {username && (
+                        <ProfileLink href={`/profile/${username}`}>
+                            <ProfileIcon />
+                        </ProfileLink>
+                    )}
                     <LogoutButton onClick={logout}>Log Out</LogoutButton>
-                </>
-            ) : (<LoginButton onClick={connectWallet}>Log in with MetaMask</LoginButton>)}
+                </UserSection>
+            ) : (
+                <LoginButton onClick={connectWallet}>Log in with MetaMask</LoginButton>
+            )}
         </Nav>
                 {showAccountPopup && (<CreateAccountPopup
                         isOpen={showAccountPopup}
@@ -52,7 +60,7 @@ const Nav = styled.nav`
   width: 100%;
 `;
 
-const LogoLink = styled.a`
+const LogoLink = styled(Link)`
   text-decoration: none;
   cursor: pointer;
 `;
@@ -62,6 +70,24 @@ const Logo = styled.div`
   height: 32px;
   border-radius: 50%;
   background: radial-gradient(circle at top left, #606c38, #283618);
+`;
+
+const UserSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+`;
+
+const ProfileLink = styled(Link)`
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+`;
+
+const ProfileIcon = styled(CgProfile)`
+  font-size: 32px;
+  color: #283618;
+  cursor: pointer;
 `;
 
 const SearchWrapper = styled.div`
@@ -110,7 +136,6 @@ const LogoutButton = styled.button`
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin-left: 10px;
 `;
 
 export default Navbar;

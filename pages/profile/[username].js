@@ -8,6 +8,7 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/LandingPage/Sidebar';
 import Post from '../../components/LandingPage/Post';
 import CreatePostPopup from '../../components/CreatePostPopup';
+import { CgProfile } from 'react-icons/cg';
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -83,7 +84,7 @@ const ProfilePage = () => {
         {loading ? (<LoadingMessage>Loading profile...</LoadingMessage>) : error ? (<ErrorMessage>{error}</ErrorMessage>) : !profileData ? (<ErrorMessage>User not found</ErrorMessage>) : (
           <>
             <Header>
-              <ProfilePic />
+              <ProfileIcon />
               <Info>
                 <Username>@{profileData.username}</Username>
                 <Bio>{profileData.bio || ""}</Bio>
@@ -160,11 +161,8 @@ const Header = styled.div`
   margin-bottom: 40px;
 `;
 
-const ProfilePic = styled.div`
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color: rgb(187, 187, 187);
+const ProfileIcon = styled(CgProfile)`
+  font-size: 80px;
   margin-right: 20px;
 `;
 

@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { createPost, updatePostOwnership } from './PostServices';
+import { createPost } from './PostServices';
 import PostNFTArtifact from '../contracts/PostNFT.json';
 
 const BSC_TESTNET_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_POST_NFT_CONTRACT_ADDRESS;
@@ -30,19 +30,6 @@ export const setupPostNFTListeners = (contractAddress, provider) => {
       
       catch (error) {
         console.error(`Error processing Minted event for ${tokenId}:`, error);
-      }
-    });
-
-    // listen for PostOwnershipTransferred events -- may remove this
-    contract.on('PostOwnershipTransferred', async (from, to, tokenId, event) => {
-      
-      // update the post ownership in Firebase
-      try {
-        await updatePostOwnership(tokenId.toString(), to);
-      } 
-      
-      catch (error) {
-        console.error(`Error processing PostOwnershipTransferred event for ${tokenId}:`, error);
       }
     });
 
