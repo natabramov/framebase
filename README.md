@@ -15,7 +15,7 @@ The application has core features:
 
 ## Image Storage
 
-Framebase uses both Firebase and Pinata to maximize efficiency and permanence:
+Framebase uses both Firebase and Pinata:
 
 1. **Image Upload**: When a user creates a post, the image is first uploaded to IPFS -- Pinata cloud
 
